@@ -1,53 +1,85 @@
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.FocusEvent;
-import java.awt.event.FocusListener;
+import java.util.*;
+import java.util.List;
 import java.util.Scanner;
+
+class Student {
+    private String id;
+    private String name;
+
+    public Student() {
+    }
+
+    public Student(String id, String name) {
+        this.id = id;
+        this.name = name;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+}
 
 public class MarksManagementSystem extends JFrame {
     private Scanner scanner;
-    private JTextField idTextField;
-    private JTextField optionTextField;
+    private JTextField mainTextField;
+    private JPanel homePanel;
 
-    private JPanel optionsPanel;
-    private JLabel welcomeLabel;
-    private JPanel inputPanel;
-    private JLabel optionLabel;
+    private JPanel mainOptionSelectionPanel;
+    private JLabel windowTitleLabel;
+
+    int i = 0;
+
+    List<Student> studentDataList = new ArrayList<>();
+
 
     public MarksManagementSystem() {
         setTitle("GDSE Marks Management System");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setSize(800, 400);
+        setSize(900, 400);
         setLayout(new BorderLayout());
-        welcomeLabel = new JLabel("WELCOME TO GDSE MARKS MANAGEMENT SYSTEM");
-        welcomeLabel.setBorder(BorderFactory.createEmptyBorder(10, 0, 0, 0)); // Set top gap
-        welcomeLabel.setHorizontalAlignment(JLabel.CENTER);
-        add(welcomeLabel, BorderLayout.NORTH);
+        windowTitleLabel = new JLabel("WELCOME TO GDSE MARKS MANAGEMENT SYSTEM");
+        windowTitleLabel.setBorder(BorderFactory.createEmptyBorder(10, 0, 0, 0)); // Set top gap
+        windowTitleLabel.setHorizontalAlignment(JLabel.CENTER);
+        add(windowTitleLabel, BorderLayout.NORTH);
 
-        optionsPanel = new JPanel(new GridLayout(5, 2, 0, 0)); // One column, with gap between rows
-        optionsPanel.add(new JLabel("  [1] Add New Student"));
-        optionsPanel.add(new JLabel("[2] Add New Student With Marks"));
-        optionsPanel.add(new JLabel("  [3] Add Marks"));
-        optionsPanel.add(new JLabel("[4] Update Student Details"));
-        optionsPanel.add(new JLabel("  [5] Update Marks"));
-        optionsPanel.add(new JLabel("[6] Delete Student"));
-        optionsPanel.add(new JLabel("  [7] Print Student Details"));
-        optionsPanel.add(new JLabel("[8] Print Student Ranks"));
-        optionsPanel.add(new JLabel("  [9] Best in Programming Fundamentals"));
-        optionsPanel.add(new JLabel("[10] Best In Database Management System"));
-        add(optionsPanel, BorderLayout.CENTER);
+        homePanel = new JPanel(new GridLayout(5, 2, 0, 0)); // One column, with gap between rows
+        homePanel.add(new JLabel("  [1] Add New Student"));
+        homePanel.add(new JLabel("[2] Add New Student With Marks"));
+        homePanel.add(new JLabel("  [3] Add Marks"));
+        homePanel.add(new JLabel("[4] Update Student Details"));
+        homePanel.add(new JLabel("  [5] Update Marks"));
+        homePanel.add(new JLabel("[6] Delete Student"));
+        homePanel.add(new JLabel("  [7] Print Student Details"));
+        homePanel.add(new JLabel("[8] Print Student Ranks"));
+        homePanel.add(new JLabel("  [9] Best in Programming Fundamentals"));
+        homePanel.add(new JLabel("[10] Best In Database Management System"));
+        add(homePanel, BorderLayout.CENTER);
 
-        inputPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 6));
-        optionLabel = new JLabel("Enter an option to continue >");
-        optionTextField = new JTextField(10);
-        optionTextField.setBorder(null);
-        optionTextField.setBackground(optionsPanel.getBackground()); // Set background as parent
-        optionTextField.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR)); // Set cursor as pointing hand
-        optionTextField.addActionListener(e -> handleOptionInput());
-        inputPanel.add(optionLabel);
-        inputPanel.setBorder(BorderFactory.createEmptyBorder(10, 0, 0, 0)); // Increase the top gap
-        inputPanel.add(optionTextField);
-        add(inputPanel, BorderLayout.SOUTH);
+        mainOptionSelectionPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 6));
+        JLabel optionLabel = new JLabel("Enter an option to continue >");
+        mainTextField = new JTextField(10);
+        mainTextField.setBorder(null);
+        mainTextField.setBackground(homePanel.getBackground()); // Set background as parent
+        mainTextField.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR)); // Set cursor as pointing hand
+        mainTextField.addActionListener(e -> handleOptionInput());
+        mainOptionSelectionPanel.add(optionLabel);
+        mainOptionSelectionPanel.setBorder(BorderFactory.createEmptyBorder(10, 0, 0, 0)); // Increase the top gap
+        mainOptionSelectionPanel.add(mainTextField);
+        add(mainOptionSelectionPanel, BorderLayout.SOUTH);
 
         setVisible(true);
         scanner = new Scanner(System.in);
@@ -58,7 +90,7 @@ public class MarksManagementSystem extends JFrame {
     }
 
     private void handleOptionInput() {
-        String option = optionTextField.getText();
+        String option = mainTextField.getText();
 
         try {
             int optionValue = Integer.parseInt(option);
@@ -103,35 +135,112 @@ public class MarksManagementSystem extends JFrame {
         }
     }
 
+
     private void addNewStudent() {
-        optionsPanel.setVisible(false);
-        welcomeLabel.setText("ADD NEW STUDENT");
-        JTextField nameTextField1 =new JTextField();
-        JPanel studentInputPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 6));
+        homePanel.setVisible(false);
+        mainOptionSelectionPanel.setVisible(false);
+
+        windowTitleLabel.setText("ADD NEW STUDENT");
+
+        JPanel studentInputPanel = new JPanel(new GridLayout(4, 2));
+
         JLabel idLabel = new JLabel("Enter Student ID:");
-        idTextField = new JTextField(1);
-        nameTextField1.setBorder(null);
-        nameTextField1.setBackground(optionsPanel.getBackground());
-        idTextField.addActionListener(e -> nameTextField1.requestFocus()); // Move focus to nameTextField after pressing Enter
+        JTextField idTextField = new JTextField();
+        idTextField.setBorder(null);
+        idTextField.setBackground(homePanel.getBackground());
+
+        JLabel studentNameLabel = new JLabel("Enter Student Name:");
+        JTextField studentNameField = new JTextField();
+        studentNameField.setBorder(null);
+        studentNameField.setBackground(homePanel.getBackground());
+
+        JLabel successLabel = new JLabel("Student has been added successfully. Do you want to add a new student (y/n):");
+        JTextField confirmationField = new JTextField(2);
+
+        idTextField.addActionListener(e -> {
+            studentNameLabel.setVisible(true);
+            studentNameField.setVisible(true);
+            studentNameField.requestFocus();
+        });
+
+        studentNameField.addActionListener(e -> {
+            successLabel.setVisible(true);
+            confirmationField.setVisible(true);
+            confirmationField.setBorder(null);
+            confirmationField.setBackground(homePanel.getBackground());
+            confirmationField.requestFocus();
+
+            // Create a new Student object and add it to the list
+            String id = idTextField.getText();
+            String name = studentNameField.getText();
+            Student student = new Student(id, name);
+            studentDataList.add(student);
+
+            // Display the student data in the window
+            displayStudentData();
+        });
+
+        confirmationField.addActionListener(e -> {
+            String confirmation = confirmationField.getText().trim().toLowerCase();
+            if (confirmation.equals("y")) {
+                successLabel.setVisible(true);
+                confirmationField.setVisible(true);
+                idLabel.setVisible(true);
+                idTextField.setVisible(true);
+                studentNameLabel.setVisible(true);
+                studentNameField.setVisible(true);
+                successLabel.setVisible(false);
+                confirmationField.setVisible(false);
+                idTextField.setText("");
+                studentNameField.setText("");
+                idTextField.requestFocus();
+            } else {
+                // Close window or perform any desired action
+            }
+        });
+
         studentInputPanel.add(idLabel);
         studentInputPanel.add(idTextField);
+        studentInputPanel.add(studentNameLabel);
+        studentInputPanel.add(studentNameField);
+        studentInputPanel.add(successLabel);
+        studentInputPanel.add(confirmationField);
 
-        JLabel nameLabel = new JLabel("Enter Student Name:");
-        JTextField nameTextField2;
-        nameTextField2 = new JTextField(1);
-        nameTextField2.setBorder(null);
-        nameTextField2.setBackground(optionsPanel.getBackground());
-        nameTextField2.addActionListener(e -> addNewStudent()); // Show the result label after pressing Enter in nameTextField
-        studentInputPanel.add(nameLabel);
-        studentInputPanel.add(nameTextField2);
+        successLabel.setVisible(false);
+        confirmationField.setVisible(false);
 
-        JPanel mainPanel = new JPanel(new BorderLayout());
-        mainPanel.add(studentInputPanel, BorderLayout.CENTER);
-
-        add(mainPanel, BorderLayout.CENTER);
+        add(studentInputPanel, BorderLayout.CENTER);
 
         setVisible(true);
         idTextField.requestFocus(); // Set initial focus on idTextField
     }
+
+    private void displayStudentData() {
+        // Create a separate panel to display the student data
+        JPanel studentDataPanel = new JPanel(new GridLayout(studentDataList.size() + 1, 2));
+
+        // Add labels for "Enter Student ID" and "Enter Student Name" in the first row
+        JLabel idInputLabel = new JLabel("Enter Student ID:");
+        JLabel nameInputLabel = new JLabel("Enter Student Name:");
+        studentDataPanel.add(idInputLabel);
+        studentDataPanel.add(nameInputLabel);
+
+        // Add labels for entered ID and name for each student
+        for (Student student : studentDataList) {
+            JLabel idLabel = new JLabel(student.getId());
+            JLabel nameLabel = new JLabel(student.getName());
+            studentDataPanel.add(idLabel);
+            studentDataPanel.add(nameLabel);
+        }
+
+        // Add the student data panel to the main window
+        add(studentDataPanel, BorderLayout.SOUTH);
+        revalidate();
+        repaint();
+    }
+
+
+
+
 
 }
