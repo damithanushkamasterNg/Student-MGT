@@ -142,8 +142,19 @@ public class MarksManagementSystem extends JFrame {
 
         windowTitleLabel.setText("ADD NEW STUDENT");
 
-        JPanel studentInputPanel = new JPanel(new GridLayout(4, 2));
+        JPanel studentDataViewPanel = new JPanel(new GridLayout(studentDataList.size(), 1));
+        JScrollPane scrollPane = new JScrollPane(studentDataViewPanel);
+        scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
 
+        // Display the existing student data in the window
+        for (Student student : studentDataList) {
+            JLabel idLabel = new JLabel("Enter Student ID:" + student.getId());
+            JLabel studentNameLabel = new JLabel("Enter Student Name:" + student.getName());
+            studentDataViewPanel.add(idLabel);
+            studentDataViewPanel.add(studentNameLabel);
+        }
+
+        JPanel studentInputPanel = new JPanel(new GridLayout(4, 2));
         JLabel idLabel = new JLabel("Enter Student ID:");
         JTextField idTextField = new JTextField();
         idTextField.setBorder(null);
@@ -158,9 +169,37 @@ public class MarksManagementSystem extends JFrame {
         JTextField confirmationField = new JTextField(2);
 
         idTextField.addActionListener(e -> {
-            studentNameLabel.setVisible(true);
-            studentNameField.setVisible(true);
-            studentNameField.requestFocus();
+            boolean idExists = false;
+            for (Student student : studentDataList) {
+                if (Objects.equals(student.getId(), idTextField.getText())) {
+                    String id = idTextField.getText();
+                    String name = studentNameField.getText();
+                    Student student1 = new Student(id, name);
+                    studentDataList.add(student);
+                    JLabel newIdLabel = new JLabel("Enter Student ID:" + id);
+                    JLabel newStudentNameLabel = new JLabel("Enter Student Name:" + name);
+                    studentNameLabel.setText("Student ID already exists");
+                    studentDataViewPanel.add(newIdLabel);
+                    studentDataViewPanel.add(newStudentNameLabel);
+                    successLabel.setVisible(false);
+                    confirmationField.setVisible(false);
+                    idLabel.setVisible(true);
+                    idTextField.setVisible(true);
+                    studentNameLabel.setVisible(true);
+                    studentNameField.setVisible(true);
+                    successLabel.setVisible(false);
+                    confirmationField.setVisible(false);
+                    idTextField.setText("");
+                    studentNameField.setText("");
+                    idTextField.requestFocus();
+                }
+            }
+
+            if (!idExists) { // Only execute this block if the ID does not exist
+                studentNameLabel.setVisible(true);
+                studentNameField.setVisible(true);
+                studentNameField.requestFocus();
+            }
         });
 
         studentNameField.addActionListener(e -> {
@@ -169,20 +208,25 @@ public class MarksManagementSystem extends JFrame {
             confirmationField.setBorder(null);
             confirmationField.setBackground(homePanel.getBackground());
             confirmationField.requestFocus();
-
-            // Create a new Student object and add it to the list
-            String id = idTextField.getText();
-            String name = studentNameField.getText();
-            Student student = new Student(id, name);
-            studentDataList.add(student);
-
-            // Display the student data in the window
-            displayStudentData();
+            revalidate();
+            repaint();
+            scrollPane.getVerticalScrollBar().setValue(scrollPane.getVerticalScrollBar().getMaximum()); // Scroll to the bottom
         });
 
         confirmationField.addActionListener(e -> {
             String confirmation = confirmationField.getText().trim().toLowerCase();
             if (confirmation.equals("y")) {
+                // Create a new Student object and add it to the list
+                String id = idTextField.getText();
+                String name = studentNameField.getText();
+                Student student = new Student(id, name);
+                studentDataList.add(student);
+
+                // Display the new student data in the window
+                JLabel newIdLabel = new JLabel("Enter Student ID:" + id);
+                JLabel newStudentNameLabel = new JLabel("Enter Student Name:" + name);
+                studentDataViewPanel.add(newIdLabel);
+                studentDataViewPanel.add(newStudentNameLabel);
                 successLabel.setVisible(true);
                 confirmationField.setVisible(true);
                 idLabel.setVisible(true);
@@ -209,38 +253,16 @@ public class MarksManagementSystem extends JFrame {
         successLabel.setVisible(false);
         confirmationField.setVisible(false);
 
-        add(studentInputPanel, BorderLayout.CENTER);
+        JPanel containerPanel = new JPanel();
+        containerPanel.setLayout(new BoxLayout(containerPanel, BoxLayout.Y_AXIS));
+        containerPanel.add(scrollPane);
+        containerPanel.add(studentInputPanel);
+
+        add(containerPanel, BorderLayout.CENTER);
 
         setVisible(true);
         idTextField.requestFocus(); // Set initial focus on idTextField
     }
-
-    private void displayStudentData() {
-        // Create a separate panel to display the student data
-        JPanel studentDataPanel = new JPanel(new GridLayout(studentDataList.size() + 1, 2));
-
-        // Add labels for "Enter Student ID" and "Enter Student Name" in the first row
-        JLabel idInputLabel = new JLabel("Enter Student ID:");
-        JLabel nameInputLabel = new JLabel("Enter Student Name:");
-        studentDataPanel.add(idInputLabel);
-        studentDataPanel.add(nameInputLabel);
-
-        // Add labels for entered ID and name for each student
-        for (Student student : studentDataList) {
-            JLabel idLabel = new JLabel(student.getId());
-            JLabel nameLabel = new JLabel(student.getName());
-            studentDataPanel.add(idLabel);
-            studentDataPanel.add(nameLabel);
-        }
-
-        // Add the student data panel to the main window
-        add(studentDataPanel, BorderLayout.SOUTH);
-        revalidate();
-        repaint();
-    }
-
-
-
 
 
 }
